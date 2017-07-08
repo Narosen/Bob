@@ -16,7 +16,7 @@ public abstract class Enemies : MonoBehaviour {
 	public bool facingRight = true;
 
 
-	protected bool isDeath = false;
+	public bool isDeath = false;
 	protected bool playerSpoted = false;
 	protected int flipFlag = 1;
 	protected int colTag = 0;
@@ -57,6 +57,10 @@ public abstract class Enemies : MonoBehaviour {
 
 			}
 		} else {
+			isDeath = true;
+		}
+
+		if (isDeath) {
 			death ();
 		}
 		
@@ -68,6 +72,7 @@ public abstract class Enemies : MonoBehaviour {
 		anim.SetBool ("playerSpoted", playerSpoted);
 
 		if (playerSpoted) {
+			
 			if ( PlayerController.positionX < transform.position.x && facingRight)
 				Flip ();
 			else if (PlayerController.positionX > transform.position.x && !facingRight)
@@ -77,6 +82,7 @@ public abstract class Enemies : MonoBehaviour {
 	}
 
 	protected void Flip(){
+		Debug.Log ("yes");
 		facingRight = !facingRight;
 		Vector3 theScale = transform.localScale;
 		theScale.x *= -1;
@@ -101,7 +107,7 @@ public abstract class Enemies : MonoBehaviour {
 
 	protected void death(){
 		die.Play ();
-		anim.SetBool ("death", true);
+		anim.SetBool ("death", isDeath);
 		Destroy (gameObject,0.5f);
 	}
 }

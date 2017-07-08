@@ -15,73 +15,91 @@ public class PlayerController : MonoBehaviour {
 	public static int Health = 100;
 	public static int Attack=5;
 	public static bool beingAttacked = false;
-	public static bool beIdle = false;
+	public static bool beIdle = true;
+	public static Animator anim;
+
 	public AudioSource punch;
 
 	private bool grounded = false;
-	private float facingRight = 1f;
+	public static float facingRight = 1f;
 	private Rigidbody2D rb;
-	private Animator anim;
+
 
 
 	// Use this for initialization
 	void Start () {
+
+		facingRight = 1f;
 		rb = GetComponent<Rigidbody2D> ();
 		anim = GetComponent<Animator> ();
 		Health = 100;
+
 	}
 
 	void Update(){
-		
-		if (GameManager.gm.gamestate == GameManager.GameState.Menu) {
-			beIdle = true;
 
-		}
-		else if (Health <= 0) {
+	 if (GameManager.gm.gamestate == GameManager.GameState.Playing) {
+
+			positionX = transform.position.x;
+
 			beIdle = false;
-			anim.SetFloat ("health", Health);
-			GameManager.gm.gamestate = GameManager.GameState.Lose;
-		} else {
-			beIdle = false;
-			positionX = transform.position.x; //raycast
-			if (grounded && Input.GetButtonDown ("Jump")) {
-				anim.SetBool ("Ground", false);
-				rb.AddForce (new Vector2 (0, jumpForce));
-			}
+			anim.SetBool ("beIdle", beIdle);	
+			//if player dies
+			if (Health <= 0) {
+				anim.SetFloat ("health", Health);
+				GameManager.gm.gamestate = GameManager.GameState.Lose;
+			} 
 
-			if (Input.GetButtonDown ("Punch")) {
+			//when player is not dead
+			else {
+				
+				//for punching
+				if (Input.GetButtonDown ("Punch")) {
 
-				punch.Play ();
-				checkAttack ();
+					punch.Play ();
+					checkAttack (); //checking if the punch hit the enemy
 								
-			} else {
-				anim.SetBool ("punch", false);
+				} else {
+					anim.SetBool ("punch", false);  
+				}
 			}
-		}
-		anim.SetBool ("beIdle", beIdle);	
-	
+
+		}	
 	}
 	
 
 	void FixedUpdate () {
 
 		if (GameManager.gm.gamestate == GameManager.GameState.Playing) {
+
+			//to check if player is on ground or not
 			grounded = Physics2D.OverlapCircle (groundCheck.position, groundRaduis, ground);
 			anim.SetBool ("Ground", grounded);
 
-			anim.SetFloat ("vSpeed", rb.velocity.y);
+			//for jumping
+			if (grounded && Input.GetButtonDown ("Jump")) {
+				grounded = false;
+				anim.SetBool ("Ground", grounded);
+				rb.velocity = new Vector2(rb.velocity.x, jumpForce); //using velocity because AddFoce gave inconsistent jumps
+			}
+			
+			anim.SetFloat ("vSpeed", rb.velocity.y); // checking vertical velocity
 
+			//horizontal movement
 			float move = Input.GetAxis ("Horizontal");
 			anim.SetFloat ("Speed", Mathf.Abs (move));
 			rb.velocity = new Vector2 (move * speed, rb.velocity.y);
+
+			//for turning left or right
 			if (move > 0 && facingRight==-1f)
 				Flip ();
-			else if (move < 0 && facingRight==1f)
+			else if (move < 0 && facingRight==+1f)
 				Flip ();
-			
+				
 		}
 
 	}
+
 
 	void Flip(){
 		facingRight *= -1f;
@@ -91,8 +109,9 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	void checkAttack(){
+		
 		anim.SetBool ("punch", true);
-		RaycastHit2D hit=Physics2D.Raycast(transform.position,new Vector2(facingRight,0.0f),minDisBetweenEnemies,enemy);
+		RaycastHit2D hit=Physics2D.Raycast(transform.position,new Vector2(facingRight,0.0f),minDisBetweenEnemies,enemy); //I made a raycast so that if it's within the range, the enemies health will be decreased
 		if (hit.collider != null) {
 				GameObject ene = hit.transform.gameObject;
 				Enemies enemy = ene.GetComponent<Enemies> ();
@@ -105,5 +124,11 @@ public class PlayerController : MonoBehaviour {
 		}
 			
 	}
+
+	private void OnDrawGizmoSelected(){
+		Gizmos.color = Color.red;
+		Gizmos.DrawWireSphere (groundCheck.position, groundRaduis);
+	}
+
 
 }

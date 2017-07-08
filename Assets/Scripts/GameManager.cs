@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class GameManager : MonoBehaviour {
 
 	// make game manager public static so can access this from other scripts
-	public static GameManager gm = null;
+	public static GameManager gm;
 
 	public GameObject player;
 	public enum GameState
@@ -44,13 +44,15 @@ public class GameManager : MonoBehaviour {
 
 
 	// setup the game
-	void Start () {
+	void Awake () {
 		
 		
 		musicAudioSource.Play ();
 
-		if (gm == null)
+		if (gm == null && GetComponent<GameManager> () != null)
 			gm = this.gameObject.GetComponent<GameManager> ();
+		else
+			Debug.Log ("Game Manager is missing");
 
 				
 		gm.gamestate = GameState.Playing;
@@ -66,14 +68,16 @@ public class GameManager : MonoBehaviour {
 
 	// this is the main game event loop
 	void Update () {
-		
-		float curHealth=PlayerController.Health/100f;
+
+		//the operation for the health bar
+		float curHealth=PlayerController.Health/100f; //making the range between 0 to 1
 		HealthBar.transform.localScale= new Vector3 (Mathf.Clamp (curHealth,0f,1f), HealthBar.transform.localScale.y,  HealthBar.transform.localScale.z);
 
+		//for pausing
 		if (Input.GetKey ("escape")) {
-			pause = true;
-			Time.timeScale = 0;
+			gm.gamestate = GameState.Menu;
 		};
+
 		switch (gamestate) {
 			
 		case GameState.Playing:
@@ -84,6 +88,8 @@ public class GameManager : MonoBehaviour {
 
 		case GameState.Menu:
 			
+			pause = true;
+			Time.timeScale = 0;
 			break;
 		
 		case GameState.Lose:
@@ -95,6 +101,8 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 
+
+	//making the pause gui
 	void OnGUI(){
 
 		if(pause == true)
