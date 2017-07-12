@@ -82,7 +82,6 @@ public abstract class Enemies : MonoBehaviour {
 	}
 
 	protected void Flip(){
-		Debug.Log ("yes");
 		facingRight = !facingRight;
 		Vector3 theScale = transform.localScale;
 		theScale.x *= -1;

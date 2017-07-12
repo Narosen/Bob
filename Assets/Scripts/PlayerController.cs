@@ -23,6 +23,7 @@ public class PlayerController : MonoBehaviour {
 	private bool grounded = false;
 	public static float facingRight = 1f;
 	private Rigidbody2D rb;
+	private bool jump = false;
 
 
 
@@ -35,6 +36,8 @@ public class PlayerController : MonoBehaviour {
 		Health = 100;
 
 	}
+
+	float move;
 
 	void Update(){
 
@@ -53,6 +56,17 @@ public class PlayerController : MonoBehaviour {
 			//when player is not dead
 			else {
 				
+				//horizontal movement
+				move = Input.GetAxis ("Horizontal");
+				anim.SetFloat ("Speed", Mathf.Abs (move));
+
+				//for jumping
+				if (grounded && Input.GetButtonDown ("Jump")) {
+					jump = true;
+					anim.SetBool ("Ground", grounded);
+
+				}
+
 				//for punching
 				if (Input.GetButtonDown ("Punch")) {
 
@@ -77,17 +91,15 @@ public class PlayerController : MonoBehaviour {
 			anim.SetBool ("Ground", grounded);
 
 			//for jumping
-			if (grounded && Input.GetButtonDown ("Jump")) {
-				grounded = false;
-				anim.SetBool ("Ground", grounded);
+			if (jump == true) {
 				rb.velocity = new Vector2(rb.velocity.x, jumpForce); //using velocity because AddFoce gave inconsistent jumps
+				grounded = false;
+				jump = false;
 			}
 			
 			anim.SetFloat ("vSpeed", rb.velocity.y); // checking vertical velocity
 
 			//horizontal movement
-			float move = Input.GetAxis ("Horizontal");
-			anim.SetFloat ("Speed", Mathf.Abs (move));
 			rb.velocity = new Vector2 (move * speed, rb.velocity.y);
 
 			//for turning left or right

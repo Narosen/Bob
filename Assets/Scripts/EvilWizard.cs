@@ -23,10 +23,10 @@ public class EvilWizard : Enemies {
 
 			if (playerSpoted) {
 				if (Vector3.Distance (GameManager.gm.player.transform.position, transform.position) > minDis) { 
-					anim.SetBool ("touchPlayer", false);
+					
 				} else {
 					shootingPoint.LookAt (GameManager.gm.player.transform);
-					anim.SetBool ("touchPlayer", true);
+
 
 				}
 				if (playerPunch == true) {

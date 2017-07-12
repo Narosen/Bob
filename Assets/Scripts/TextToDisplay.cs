@@ -7,8 +7,8 @@ public class TextToDisplay : MonoBehaviour {
 	[SerializeField] private TextAsset messages;
 	[SerializeField] private AudioSource[] soundEffects =null;
 	private int[] pointOfEffects = { 15, 18, 20, 24, 31 };
-	private int[] noOfCommands = { 3, 3, 1 , 4, 1 };
-	private CutScenesCommand command15, command15_1, command15_2, command18, command18_1, command18_2, command20, command24, command24_1,
+	private int[] noOfCommands = { 3, 4, 1 , 4, 1 };
+	private CutScenesCommand command15, command15_1, command15_2, command18, command18_1, command18_2, command18_3, command20, command24, command24_1,
 	command24_2, command24_3,command31;
 
 	public CutSceneManager manager;
@@ -32,9 +32,10 @@ public class TextToDisplay : MonoBehaviour {
 		command15_1 = new ShockJump (rb);
 		command15_2 = new Flip (Playertrans,-1);
 		command18 = new Move (rb,target1);
-		command18_1 = new Exchange (objectToChange[0],changedObject[0]);
-		command18_2 = new PlayAudio (soundEffects[1]);
-		command20 = new SetActiveTill (changedObject[0]);
+		command18_1 = new Exchange (null,changedObject[0]);
+		command18_2 = new Exchange (objectToChange[0],changedObject[1]);
+		command18_3 = new PlayAudio (soundEffects[1]);
+		command20 = new SetActiveTill (changedObject[1]);
 		command24 = new Flip (Playertrans,-1);
 		command24_1 = new Move (rb,target2);
 		command24_2 = new Exchange (objectToChange[1],null);
@@ -56,6 +57,7 @@ public class TextToDisplay : MonoBehaviour {
 			CutSceneManager.Commands.Add (command18);
 			CutSceneManager.Commands.Add (command18_1);
 			CutSceneManager.Commands.Add (command18_2);
+			CutSceneManager.Commands.Add (command18_3);
 			CutSceneManager.Commands.Add (command20);
 			CutSceneManager.Commands.Add (command24);
 			CutSceneManager.Commands.Add (command24_1);
@@ -63,7 +65,7 @@ public class TextToDisplay : MonoBehaviour {
 			CutSceneManager.Commands.Add (command24_3);
 			CutSceneManager.Commands.Add (command31);
 			manager.isActive = true;
-
+			Event.KeyboardEvent ("return");
 			Destroy (gameObject);
 		
 		}

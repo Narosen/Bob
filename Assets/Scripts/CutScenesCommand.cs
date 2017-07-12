@@ -180,8 +180,14 @@ public class Exchange : CutScenesCommand
 
 	public override IEnumerator Execute()
 	{
-		a.SetActive (false);
-		b.SetActive (true);
+		if (a != null) {
+			a.SetActive (false);
+		}
+
+		if (b != null) {
+			b.SetActive (true);
+		}
+
 		yield return null;
 
 	}
